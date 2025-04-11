@@ -28,6 +28,7 @@ const Editor = () => {
       phone: "+33 6 12 34 56 78",
       location: "Paris, France",
       summary: "Experienced software developer with a passion for creating elegant solutions to complex problems.",
+      photo: "",
     },
     experiences: [
       {
@@ -49,6 +50,18 @@ const Editor = () => {
         startDate: "09/2015",
         endDate: "06/2018",
         description: "Graduated with honors. Specialized in machine learning and artificial intelligence.",
+      },
+    ],
+    languages: [
+      {
+        id: uuidv4(),
+        name: "English",
+        level: 5,
+      },
+      {
+        id: uuidv4(),
+        name: "French",
+        level: 4,
       },
     ],
     skills: [

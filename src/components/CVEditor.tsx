@@ -1,7 +1,6 @@
-
-import { useState } from "react";
+import { useState, useRef, ChangeEvent } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { CVData, Skill } from "@/lib/types";
+import { CVData, Skill, Language } from "@/lib/types";
 import CVSection from "./CVSection";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Form } from "@/components/ui/form";
-import { PlusCircle, Trash2 } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { PlusCircle, Trash2, Upload, Camera } from "lucide-react";
 
 interface CVEditorProps {
   cvData: CVData;
@@ -25,7 +25,17 @@ const SKILL_LEVELS = [
   { value: 5, label: "Expert" }
 ];
 
+const LANGUAGE_LEVELS = [
+  { value: 1, label: "Basic" },
+  { value: 2, label: "Conversational" },
+  { value: 3, label: "Intermediate" },
+  { value: 4, label: "Fluent" },
+  { value: 5, label: "Native" }
+];
+
 const CVEditor = ({ cvData, onUpdateCV }: CVEditorProps) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
   const handlePersonalInfoChange = (field: string, value: string) => {
     onUpdateCV({
       personalInfo: {
@@ -33,6 +43,19 @@ const CVEditor = ({ cvData, onUpdateCV }: CVEditorProps) => {
         [field]: value,
       },
     });
+  };
+  
+  const handlePhotoUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      if (event.target?.result) {
+        handlePersonalInfoChange("photo", event.target.result as string);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const addExperience = () => {
@@ -127,6 +150,34 @@ const CVEditor = ({ cvData, onUpdateCV }: CVEditorProps) => {
     });
   };
 
+  const addLanguage = () => {
+    const newLanguage: Language = {
+      id: uuidv4(),
+      name: "",
+      level: 3,
+    };
+    
+    onUpdateCV({
+      languages: [...(cvData.languages || []), newLanguage],
+    });
+  };
+
+  const updateLanguage = (index: number, field: 'name' | 'level', value: string | number) => {
+    const updatedLanguages = [...(cvData.languages || [])];
+    updatedLanguages[index] = {
+      ...updatedLanguages[index],
+      [field]: value,
+    };
+    
+    onUpdateCV({ languages: updatedLanguages });
+  };
+
+  const removeLanguage = (id: string) => {
+    onUpdateCV({
+      languages: (cvData.languages || []).filter((lang) => lang.id !== id),
+    });
+  };
+
   return (
     <div className="p-4 bg-white rounded-lg shadow">
       <Tabs defaultValue="personal">
@@ -134,60 +185,94 @@ const CVEditor = ({ cvData, onUpdateCV }: CVEditorProps) => {
           <TabsTrigger value="personal">Personal</TabsTrigger>
           <TabsTrigger value="experience">Experience</TabsTrigger>
           <TabsTrigger value="education">Education</TabsTrigger>
+          <TabsTrigger value="languages">Languages</TabsTrigger>
           <TabsTrigger value="skills">Skills</TabsTrigger>
         </TabsList>
         
         <div>
           <TabsContent value="personal">
             <CVSection title="Personal Information" collapsible={false}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="form-item">
-                  <label className="block text-gray-700">First Name</label>
-                  <Input 
-                    value={cvData.personalInfo.firstName} 
-                    onChange={(e) => handlePersonalInfoChange("firstName", e.target.value)} 
-                  />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="form-item flex flex-col items-center">
+                  <label className="block text-gray-700 mb-2">Photo</label>
+                  <div className="relative w-40 h-40 border border-gray-300 rounded-lg overflow-hidden flex justify-center items-center bg-gray-100">
+                    {cvData.personalInfo.photo ? (
+                      <Avatar className="w-full h-full rounded-none">
+                        <AvatarImage src={cvData.personalInfo.photo} alt="Profile" className="object-cover" />
+                        <AvatarFallback>
+                          <Camera className="h-8 w-8 text-gray-400" />
+                        </AvatarFallback>
+                      </Avatar>
+                    ) : (
+                      <Camera className="h-8 w-8 text-gray-400" />
+                    )}
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handlePhotoUpload}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => fileInputRef.current?.click()} 
+                    className="mt-2"
+                    size="sm"
+                  >
+                    <Upload className="h-4 w-4 mr-2" /> Upload Photo
+                  </Button>
                 </div>
                 
-                <div className="form-item">
-                  <label className="block text-gray-700">Last Name</label>
-                  <Input 
-                    value={cvData.personalInfo.lastName} 
-                    onChange={(e) => handlePersonalInfoChange("lastName", e.target.value)} 
-                  />
-                </div>
-                
-                <div className="form-item">
-                  <label className="block text-gray-700">Professional Title</label>
-                  <Input 
-                    value={cvData.personalInfo.title} 
-                    onChange={(e) => handlePersonalInfoChange("title", e.target.value)} 
-                  />
-                </div>
-                
-                <div className="form-item">
-                  <label className="block text-gray-700">Email</label>
-                  <Input 
-                    type="email"
-                    value={cvData.personalInfo.email} 
-                    onChange={(e) => handlePersonalInfoChange("email", e.target.value)} 
-                  />
-                </div>
-                
-                <div className="form-item">
-                  <label className="block text-gray-700">Phone</label>
-                  <Input 
-                    value={cvData.personalInfo.phone} 
-                    onChange={(e) => handlePersonalInfoChange("phone", e.target.value)} 
-                  />
-                </div>
-                
-                <div className="form-item">
-                  <label className="block text-gray-700">Location</label>
-                  <Input 
-                    value={cvData.personalInfo.location} 
-                    onChange={(e) => handlePersonalInfoChange("location", e.target.value)} 
-                  />
+                <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="form-item">
+                    <label className="block text-gray-700">First Name</label>
+                    <Input 
+                      value={cvData.personalInfo.firstName} 
+                      onChange={(e) => handlePersonalInfoChange("firstName", e.target.value)} 
+                    />
+                  </div>
+                  
+                  <div className="form-item">
+                    <label className="block text-gray-700">Last Name</label>
+                    <Input 
+                      value={cvData.personalInfo.lastName} 
+                      onChange={(e) => handlePersonalInfoChange("lastName", e.target.value)} 
+                    />
+                  </div>
+                  
+                  <div className="form-item">
+                    <label className="block text-gray-700">Professional Title</label>
+                    <Input 
+                      value={cvData.personalInfo.title} 
+                      onChange={(e) => handlePersonalInfoChange("title", e.target.value)} 
+                    />
+                  </div>
+                  
+                  <div className="form-item">
+                    <label className="block text-gray-700">Email</label>
+                    <Input 
+                      type="email"
+                      value={cvData.personalInfo.email} 
+                      onChange={(e) => handlePersonalInfoChange("email", e.target.value)} 
+                    />
+                  </div>
+                  
+                  <div className="form-item">
+                    <label className="block text-gray-700">Phone</label>
+                    <Input 
+                      value={cvData.personalInfo.phone} 
+                      onChange={(e) => handlePersonalInfoChange("phone", e.target.value)} 
+                    />
+                  </div>
+                  
+                  <div className="form-item">
+                    <label className="block text-gray-700">Location</label>
+                    <Input 
+                      value={cvData.personalInfo.location} 
+                      onChange={(e) => handlePersonalInfoChange("location", e.target.value)} 
+                    />
+                  </div>
                 </div>
               </div>
               
@@ -364,6 +449,51 @@ const CVEditor = ({ cvData, onUpdateCV }: CVEditorProps) => {
               <Button onClick={addEducation} className="mt-2">
                 <PlusCircle className="h-4 w-4 mr-2" /> Add Education
               </Button>
+            </CVSection>
+          </TabsContent>
+          
+          <TabsContent value="languages">
+            <CVSection title="Languages" collapsible={false}>
+              <div className="space-y-4">
+                {(cvData.languages || []).map((language, index) => (
+                  <div key={language.id} className="flex items-center space-x-2">
+                    <Input
+                      className="flex-1"
+                      placeholder="Language name"
+                      value={language.name}
+                      onChange={(e) => updateLanguage(index, 'name', e.target.value)}
+                    />
+                    
+                    <Select 
+                      value={language.level.toString()} 
+                      onValueChange={(value) => updateLanguage(index, 'level', parseInt(value))}
+                    >
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {LANGUAGE_LEVELS.map((level) => (
+                          <SelectItem key={level.value} value={level.value.toString()}>
+                            {level.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      onClick={() => removeLanguage(language.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                
+                <Button onClick={addLanguage} className="mt-2">
+                  <PlusCircle className="h-4 w-4 mr-2" /> Add Language
+                </Button>
+              </div>
             </CVSection>
           </TabsContent>
           

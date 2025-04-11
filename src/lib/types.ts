@@ -7,6 +7,7 @@ export interface PersonalInfo {
   phone: string;
   location: string;
   summary: string;
+  photo?: string; // Adding optional photo field
 }
 
 export interface Experience {
@@ -35,11 +36,18 @@ export interface Skill {
   level: number; // 1-5
 }
 
+export interface Language {
+  id: string;
+  name: string;
+  level: number; // 1-5
+}
+
 export interface CVData {
   personalInfo: PersonalInfo;
   experiences: Experience[];
   education: Education[];
   skills: Skill[];
+  languages: Language[]; // Adding languages array
 }
 
 export interface Template {

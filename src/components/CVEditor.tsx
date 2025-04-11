@@ -58,6 +58,10 @@ const CVEditor = ({ cvData, onUpdateCV }: CVEditorProps) => {
     reader.readAsDataURL(file);
   };
 
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
   const addExperience = () => {
     const newExperience = {
       id: uuidv4(),
@@ -197,35 +201,31 @@ const CVEditor = ({ cvData, onUpdateCV }: CVEditorProps) => {
                   <div className="w-full md:w-1/3">
                     <div className="form-item">
                       <label className="block text-gray-700 mb-2">Photo</label>
-                      <div className="flex flex-col items-center">
-                        <div className="w-full aspect-square border border-gray-300 rounded-lg overflow-hidden flex justify-center items-center bg-gray-100">
-                          {cvData.personalInfo.photo ? (
-                            <Avatar className="w-full h-full rounded-none">
-                              <AvatarImage src={cvData.personalInfo.photo} alt="Profile" className="object-cover" />
-                              <AvatarFallback>
-                                <Camera className="h-8 w-8 text-gray-400" />
-                              </AvatarFallback>
-                            </Avatar>
-                          ) : (
-                            <Camera className="h-12 w-12 text-gray-400" />
-                          )}
-                        </div>
-                        <Button 
-                          variant="outline" 
-                          onClick={() => fileInputRef.current?.click()} 
-                          className="mt-4 w-full"
-                          size="sm"
-                        >
-                          <Upload className="h-4 w-4 mr-2" /> Upload Photo
-                        </Button>
-                        <input
-                          type="file"
-                          ref={fileInputRef}
-                          onChange={handlePhotoUpload}
-                          accept="image/*"
-                          className="hidden"
-                        />
+                      <div 
+                        onClick={triggerFileInput} 
+                        className="w-full aspect-square border border-gray-300 rounded-lg overflow-hidden flex flex-col justify-center items-center bg-gray-100 cursor-pointer hover:bg-gray-200 transition-colors"
+                      >
+                        {cvData.personalInfo.photo ? (
+                          <Avatar className="w-full h-full rounded-none">
+                            <AvatarImage src={cvData.personalInfo.photo} alt="Profile" className="object-cover" />
+                            <AvatarFallback>
+                              <Camera className="h-8 w-8 text-gray-400" />
+                            </AvatarFallback>
+                          </Avatar>
+                        ) : (
+                          <>
+                            <Camera className="h-12 w-12 text-gray-400 mb-2" />
+                            <span className="text-sm text-gray-500">Upload Photo</span>
+                          </>
+                        )}
                       </div>
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handlePhotoUpload}
+                        accept="image/*"
+                        className="hidden"
+                      />
                     </div>
                   </div>
                   

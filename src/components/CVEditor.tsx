@@ -181,7 +181,7 @@ const CVEditor = ({ cvData, onUpdateCV }: CVEditorProps) => {
   return (
     <div className="p-4 bg-white rounded-lg shadow">
       <Tabs defaultValue="personal">
-        <TabsList className="mb-4">
+        <TabsList className="mb-4 w-full">
           <TabsTrigger value="personal">Personal</TabsTrigger>
           <TabsTrigger value="experience">Experience</TabsTrigger>
           <TabsTrigger value="education">Education</TabsTrigger>
@@ -192,97 +192,105 @@ const CVEditor = ({ cvData, onUpdateCV }: CVEditorProps) => {
         <div>
           <TabsContent value="personal">
             <CVSection title="Personal Information" collapsible={false}>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="form-item flex flex-col items-center">
-                  <label className="block text-gray-700 mb-2">Photo</label>
-                  <div className="relative w-40 h-40 border border-gray-300 rounded-lg overflow-hidden flex justify-center items-center bg-gray-100">
-                    {cvData.personalInfo.photo ? (
-                      <Avatar className="w-full h-full rounded-none">
-                        <AvatarImage src={cvData.personalInfo.photo} alt="Profile" className="object-cover" />
-                        <AvatarFallback>
-                          <Camera className="h-8 w-8 text-gray-400" />
-                        </AvatarFallback>
-                      </Avatar>
-                    ) : (
-                      <Camera className="h-8 w-8 text-gray-400" />
-                    )}
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handlePhotoUpload}
-                      accept="image/*"
-                      className="hidden"
-                    />
+              <div className="grid grid-cols-1 gap-4">
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="w-full md:w-1/3">
+                    <div className="form-item">
+                      <label className="block text-gray-700 mb-2">Photo</label>
+                      <div className="flex flex-col items-center">
+                        <div className="w-full aspect-square border border-gray-300 rounded-lg overflow-hidden flex justify-center items-center bg-gray-100">
+                          {cvData.personalInfo.photo ? (
+                            <Avatar className="w-full h-full rounded-none">
+                              <AvatarImage src={cvData.personalInfo.photo} alt="Profile" className="object-cover" />
+                              <AvatarFallback>
+                                <Camera className="h-8 w-8 text-gray-400" />
+                              </AvatarFallback>
+                            </Avatar>
+                          ) : (
+                            <Camera className="h-12 w-12 text-gray-400" />
+                          )}
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => fileInputRef.current?.click()} 
+                          className="mt-4 w-full"
+                          size="sm"
+                        >
+                          <Upload className="h-4 w-4 mr-2" /> Upload Photo
+                        </Button>
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          onChange={handlePhotoUpload}
+                          accept="image/*"
+                          className="hidden"
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => fileInputRef.current?.click()} 
-                    className="mt-2"
-                    size="sm"
-                  >
-                    <Upload className="h-4 w-4 mr-2" /> Upload Photo
-                  </Button>
+                  
+                  <div className="w-full md:w-2/3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="form-item">
+                        <label className="block text-gray-700 mb-1">First Name</label>
+                        <Input 
+                          value={cvData.personalInfo.firstName} 
+                          onChange={(e) => handlePersonalInfoChange("firstName", e.target.value)} 
+                        />
+                      </div>
+                      
+                      <div className="form-item">
+                        <label className="block text-gray-700 mb-1">Last Name</label>
+                        <Input 
+                          value={cvData.personalInfo.lastName} 
+                          onChange={(e) => handlePersonalInfoChange("lastName", e.target.value)} 
+                        />
+                      </div>
+                      
+                      <div className="form-item">
+                        <label className="block text-gray-700 mb-1">Professional Title</label>
+                        <Input 
+                          value={cvData.personalInfo.title} 
+                          onChange={(e) => handlePersonalInfoChange("title", e.target.value)} 
+                        />
+                      </div>
+                      
+                      <div className="form-item">
+                        <label className="block text-gray-700 mb-1">Email</label>
+                        <Input 
+                          type="email"
+                          value={cvData.personalInfo.email} 
+                          onChange={(e) => handlePersonalInfoChange("email", e.target.value)} 
+                        />
+                      </div>
+                      
+                      <div className="form-item">
+                        <label className="block text-gray-700 mb-1">Phone</label>
+                        <Input 
+                          value={cvData.personalInfo.phone} 
+                          onChange={(e) => handlePersonalInfoChange("phone", e.target.value)} 
+                        />
+                      </div>
+                      
+                      <div className="form-item">
+                        <label className="block text-gray-700 mb-1">Location</label>
+                        <Input 
+                          value={cvData.personalInfo.location} 
+                          onChange={(e) => handlePersonalInfoChange("location", e.target.value)} 
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 
-                <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="form-item">
-                    <label className="block text-gray-700">First Name</label>
-                    <Input 
-                      value={cvData.personalInfo.firstName} 
-                      onChange={(e) => handlePersonalInfoChange("firstName", e.target.value)} 
-                    />
-                  </div>
-                  
-                  <div className="form-item">
-                    <label className="block text-gray-700">Last Name</label>
-                    <Input 
-                      value={cvData.personalInfo.lastName} 
-                      onChange={(e) => handlePersonalInfoChange("lastName", e.target.value)} 
-                    />
-                  </div>
-                  
-                  <div className="form-item">
-                    <label className="block text-gray-700">Professional Title</label>
-                    <Input 
-                      value={cvData.personalInfo.title} 
-                      onChange={(e) => handlePersonalInfoChange("title", e.target.value)} 
-                    />
-                  </div>
-                  
-                  <div className="form-item">
-                    <label className="block text-gray-700">Email</label>
-                    <Input 
-                      type="email"
-                      value={cvData.personalInfo.email} 
-                      onChange={(e) => handlePersonalInfoChange("email", e.target.value)} 
-                    />
-                  </div>
-                  
-                  <div className="form-item">
-                    <label className="block text-gray-700">Phone</label>
-                    <Input 
-                      value={cvData.personalInfo.phone} 
-                      onChange={(e) => handlePersonalInfoChange("phone", e.target.value)} 
-                    />
-                  </div>
-                  
-                  <div className="form-item">
-                    <label className="block text-gray-700">Location</label>
-                    <Input 
-                      value={cvData.personalInfo.location} 
-                      onChange={(e) => handlePersonalInfoChange("location", e.target.value)} 
-                    />
-                  </div>
+                <div className="form-item mt-2">
+                  <label className="block text-gray-700 mb-1">Professional Summary</label>
+                  <Textarea 
+                    value={cvData.personalInfo.summary}
+                    onChange={(e) => handlePersonalInfoChange("summary", e.target.value)}
+                    rows={4}
+                  />
                 </div>
-              </div>
-              
-              <div className="form-item mt-4">
-                <label className="block text-gray-700">Professional Summary</label>
-                <Textarea 
-                  value={cvData.personalInfo.summary}
-                  onChange={(e) => handlePersonalInfoChange("summary", e.target.value)}
-                  rows={4}
-                />
               </div>
             </CVSection>
           </TabsContent>

@@ -1,27 +1,23 @@
-
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
-import { CVData, Experience, Education, Skill } from "@/lib/types";
+import { CVData, Skill } from "@/lib/types";
 import CVSection from "./CVSection";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PlusCircle, Trash2 } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface CVEditorProps {
   cvData: CVData;
   onUpdateCV: (data: Partial<CVData>) => void;
 }
+
+const SKILL_LEVELS = [
+  { value: 1, label: "Beginner" },
+  { value: 2, label: "Elementary" },
+  { value: 3, label: "Intermediate" },
+  { value: 4, label: "Advanced" },
+  { value: 5, label: "Expert" }
+];
 
 const CVEditor = ({ cvData, onUpdateCV }: CVEditorProps) => {
   const form = useForm<CVData>({
@@ -113,7 +109,7 @@ const CVEditor = ({ cvData, onUpdateCV }: CVEditorProps) => {
     });
   };
 
-  const updateSkill = (index: number, field: string, value: string | number) => {
+  const updateSkill = (index: number, field: 'name' | 'level', value: string | number) => {
     const updatedSkills = [...cvData.skills];
     updatedSkills[index] = {
       ...updatedSkills[index],
@@ -371,41 +367,53 @@ const CVEditor = ({ cvData, onUpdateCV }: CVEditorProps) => {
           
           <TabsContent value="skills">
             <CVSection title="Skills" collapsible={false}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-4">
                 {cvData.skills.map((skill, index) => (
-                  <div key={skill.id} className="flex items-center gap-2">
-                    <Input 
-                      value={skill.name}
-                      onChange={(e) => updateSkill(index, "name", e.target.value)}
-                      placeholder="Skill name"
-                      className="flex-1"
-                    />
-                    <select
-                      value={skill.level}
-                      onChange={(e) => updateSkill(index, "level", parseInt(e.target.value))}
-                      className="border border-gray-300 rounded px-3 py-2"
+                  <div key={skill.id} className="flex items-center space-x-2">
+                    <Select 
+                      value={skill.level.toString()} 
+                      onValueChange={(value) => updateSkill(index, 'level', parseInt(value))}
                     >
-                      <option value={1}>Beginner</option>
-                      <option value={2}>Elementary</option>
-                      <option value={3}>Intermediate</option>
-                      <option value={4}>Advanced</option>
-                      <option value={5}>Expert</option>
-                    </select>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {SKILL_LEVELS.map((level) => (
+                          <SelectItem key={level.value} value={level.value.toString()}>
+                            {level.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    <Select 
+                      value={skill.name} 
+                      onValueChange={(value) => updateSkill(index, 'name', value)}
+                    >
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Skill" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="JavaScript">JavaScript</SelectItem>
+                        <SelectItem value="React">React</SelectItem>
+                        <SelectItem value="Python">Python</SelectItem>
+                      </SelectContent>
+                    </Select>
+
                     <Button 
                       variant="outline" 
                       size="icon"
                       onClick={() => removeSkill(skill.id)}
-                      className="flex-shrink-0"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 ))}
+                
+                <Button onClick={addSkill} className="mt-2">
+                  <PlusCircle className="h-4 w-4 mr-2" /> Add Skill
+                </Button>
               </div>
-              
-              <Button onClick={addSkill} className="mt-4">
-                <PlusCircle className="h-4 w-4 mr-2" /> Add Skill
-              </Button>
             </CVSection>
           </TabsContent>
         </Form>

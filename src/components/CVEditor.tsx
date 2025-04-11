@@ -1,9 +1,15 @@
+
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { CVData, Skill } from "@/lib/types";
 import CVSection from "./CVSection";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Form } from "@/components/ui/form";
 import { PlusCircle, Trash2 } from "lucide-react";
 
 interface CVEditorProps {
@@ -20,10 +26,6 @@ const SKILL_LEVELS = [
 ];
 
 const CVEditor = ({ cvData, onUpdateCV }: CVEditorProps) => {
-  const form = useForm<CVData>({
-    defaultValues: cvData,
-  });
-
   const handlePersonalInfoChange = (field: string, value: string) => {
     onUpdateCV({
       personalInfo: {
@@ -34,7 +36,7 @@ const CVEditor = ({ cvData, onUpdateCV }: CVEditorProps) => {
   };
 
   const addExperience = () => {
-    const newExperience: Experience = {
+    const newExperience = {
       id: uuidv4(),
       company: "",
       position: "",
@@ -66,7 +68,7 @@ const CVEditor = ({ cvData, onUpdateCV }: CVEditorProps) => {
   };
 
   const addEducation = () => {
-    const newEducation: Education = {
+    const newEducation = {
       id: uuidv4(),
       institution: "",
       degree: "",
@@ -135,7 +137,7 @@ const CVEditor = ({ cvData, onUpdateCV }: CVEditorProps) => {
           <TabsTrigger value="skills">Skills</TabsTrigger>
         </TabsList>
         
-        <Form {...form}>
+        <div>
           <TabsContent value="personal">
             <CVSection title="Personal Information" collapsible={false}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -386,19 +388,12 @@ const CVEditor = ({ cvData, onUpdateCV }: CVEditorProps) => {
                       </SelectContent>
                     </Select>
 
-                    <Select 
-                      value={skill.name} 
-                      onValueChange={(value) => updateSkill(index, 'name', value)}
-                    >
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Skill" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="JavaScript">JavaScript</SelectItem>
-                        <SelectItem value="React">React</SelectItem>
-                        <SelectItem value="Python">Python</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Input
+                      className="flex-1"
+                      placeholder="Skill name"
+                      value={skill.name}
+                      onChange={(e) => updateSkill(index, 'name', e.target.value)}
+                    />
 
                     <Button 
                       variant="outline" 
@@ -416,7 +411,7 @@ const CVEditor = ({ cvData, onUpdateCV }: CVEditorProps) => {
               </div>
             </CVSection>
           </TabsContent>
-        </Form>
+        </div>
       </Tabs>
     </div>
   );

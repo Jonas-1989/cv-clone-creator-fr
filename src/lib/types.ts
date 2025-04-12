@@ -1,4 +1,3 @@
-
 export interface PersonalInfo {
   firstName: string;
   lastName: string;
@@ -7,7 +6,16 @@ export interface PersonalInfo {
   phone: string;
   location: string;
   summary: string;
-  photo?: string; // Adding optional photo field
+  photo?: string;
+  birthDate?: string;
+  birthPlace?: string;
+  drivingLicense?: string;
+  gender?: string;
+  nationality?: string;
+  maritalStatus?: string;
+  website?: string;
+  linkedin?: string;
+  customField?: string;
 }
 
 export interface Experience {

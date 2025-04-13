@@ -306,7 +306,7 @@ const Editor = () => {
             </div>
           </div>
           
-          <div id="cv-preview" className="bg-white dark:bg-gray-800 max-w-4xl mx-auto">
+          <div id="cv-preview" className="bg-white dark:bg-gray-800 max-w-4xl mx-auto rounded-lg shadow-sm">
             <CVPreview cvData={cvData} templateId={selectedTemplate} />
           </div>
         </div>

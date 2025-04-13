@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Template } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,6 +18,11 @@ const templates: Template[] = [
     id: "creative",
     name: "Creative",
     thumbnail: "https://via.placeholder.com/150x200?text=Creative",
+  },
+  {
+    id: "turquoise",
+    name: "Turquoise",
+    thumbnail: "https://via.placeholder.com/150x200?text=Turquoise",
   },
 ];
 
